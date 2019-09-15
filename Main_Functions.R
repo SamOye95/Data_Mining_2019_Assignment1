@@ -1,40 +1,47 @@
 #Data Mining 2019 Assignment 1
-#Created by Samuel Oyediran (6533809)
+#Created by Samuel Oyediran (6533809) and Nick Smidt
+# This script contains the implementation of classification trees
 
-# Description: Classification Tree
-# Returns; A classification tree
-#  1. x: The data containing the attributes values to split
-#  2. y: labels that fit to x.
-#  3. nmin - minimum amount of rows needed to split.
-#  4. minleaf - minimum number of leafs a node should have
-#  5. nfeat = Number of features to sample.
+source("Util_Functions.r")
 
-tree.grow <- function(x,y, nmin=2, minleaf=1, nfeat=ncol(x)) {
-  
-  #first some checks
-  if (is.null(x)) {
-    stop("Feature table cannot be empty or null")
-  }
-  
-  if (is.null(x)) {
-    stop("Class label cannot be empty or null")
-  }
-  
-  if (minleaf < 1) {
-    stop("Must have at least 2 observations on a leaf node")
-  }
-  
-  if (nmin <= 0) {
-    stop("Minimum number of observations for a node has to be positive")
-  }
-  
-  if (nfeat > ncol(x)) {
-    stop("Cannot take a sample larger than the population.")
-  }
-  
-  
-  #Creating a n empty tree object
-  tree <- data.frame(matrix(ncol=5,nrow=0))
-  
+# Function: tree.grow(x, y, nmin, minleaf, impurity)
+# Trains a binary classification tree.
+#
+# Arguments
+#   x : A numerical matrix. Each column contains observations for a
+#       a numerical/binary attribute.
+#   y : A numerical (binary) vector, containing the true class label
+#       for each row of x
+#   nmin : an integer representing the minimum number of observation that a node
+#          must contain for it to be allowed to be split
+#   minleaf : an integer representing the minimum number for a leaf node
+#   impurity : The impurity function that will be used in the algorithm to
+#              compute the impurity reduction (default = gini index)
+#
+#
+# The number of rows of x is the same as the length of y.
+#
+# Result: A tree data structure, that can be used to predict class labels
+#         with the classify function.
+
+tree.grow <- function(x, y, nmin = 0, minleaf = 0, impurity = gini_index){
+  #TODO 
   
 }
+
+
+# Function: tree.classify(x, tr)
+# Predicts the class label for each row in the input attributes matrix.
+#
+# Arguments
+#   x : A matrix with the same number of columns as the matrix used to train tr
+#   tr : A tree object produced by the tree.grow function
+#
+# Result
+#   A vector of binary class labels. It contains the predicted class label
+#   for each row in x.
+tree.classify <- function (x, tr){
+  
+}
+
+
