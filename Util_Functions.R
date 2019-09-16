@@ -16,6 +16,28 @@ impurity_gini_index <-function(x){
    #returns gini index value
    return((n1 / n) * (1- (n1 / n)))
 }
+BNS<- function(nvals,cvals){
+  classvals<- data.frame(cvals)
+  n<-NROW(data)
+  imp <- impurity_gini_index(classvals)
+  splitval<- vector(mode = "numeric", n)
+   i=1
+  for (var in nvals) {
+    left_total <- length(nvals[nvals<=var])
+    left_possitive <- sum(cvals[nvals<=var])
+    left_negative <- left_total-left_possitive
+    
+    right_total <- length(nvals[nvals>var])
+    right_possitive <- sum(cvals[nvals>var])
+    right_negative <- right_total-right_possitive
+   # return(c(left_negative,left_possitive,left_total, right_negative, right_possitive, right_total))
+    splitval[i]= imp - (left_total /n)*(left_possitive/left_total)*(left_negative/left_total) - (right_total /n)*(right_possitive/right_total)*(right_negative/right_total)
+    i<-i+1
+  }
+  return(splitval)
+
+}
+
 
 
 # Function: split(s, x, y)
