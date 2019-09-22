@@ -16,9 +16,11 @@ impurity_gini_index <-function(x){
    #returns gini index value
    return((n1 / n) * (1- (n1 / n)))
 }
+#nvals = numbervalues 
+#cvals = classvalues
 BNS<- function(nvals,cvals){
   classvals<- data.frame(cvals)
-  n<-NROW(data)
+  n<-length(nvals)
   imp <- impurity_gini_index(classvals)
   splitval<- vector(mode = "numeric", n)
    i=1
@@ -31,11 +33,40 @@ BNS<- function(nvals,cvals){
     right_possitive <- sum(cvals[nvals>var])
     right_negative <- right_total-right_possitive
    # return(c(left_negative,left_possitive,left_total, right_negative, right_possitive, right_total))
-    splitval[i]= imp - (left_total /n)*(left_possitive/left_total)*(left_negative/left_total) - (right_total /n)*(right_possitive/right_total)*(right_negative/right_total)
+    splitval[i]<- imp - (left_total /n)*(left_possitive/left_total)*(left_negative/left_total) - (right_total /n)*(right_possitive/right_total)*(right_negative/right_total)
+    
     i<-i+1
   }
-  return(splitval)
+   val = nvals[which.max(splitval)]
+  return(c(splitval[which.max(splitval)],val))
 
+}
+
+Bestsplit = function(data){
+  list = setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("infogain", "splitval", "column"))
+  I =1
+  for(var in data){
+    uni= unique(var)
+    if(length(uni) == 2){
+      list = rbind(list,c(igi(var, data$class),1, colnames(data[I])))
+      
+     
+    }
+    else{
+     list = rbind(list,c(BNS(var, data$class),colnames(data[I])))
+      
+    }
+    
+    I= I+1
+  }
+  return(list[which.max(list$infogain),])
+}
+# impurity gini index of a vector
+igi = function(data, cvals){
+  classvals<- data.frame(cvals)
+  n = length(data)
+  n1 = sum(data)
+  return(impurity_gini_index(classvals)-(n1 / n) * (1- (n1 / n)))
 }
 
 
