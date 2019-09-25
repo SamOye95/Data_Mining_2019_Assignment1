@@ -3,6 +3,7 @@
 # This script contains the implementation of classification trees
 
 source("Util_Functions.r")
+source("node.r")
 
 # Function: tree.grow(x, y, nmin, minleaf, impurity)
 # Trains a binary classification tree.
@@ -24,9 +25,33 @@ source("Util_Functions.r")
 # Result: A tree data structure, that can be used to predict class labels
 #         with the classify function.
 
-tree.grow <- function(x, y, nmin = 0, minleaf = 0, impurity = gini_index){
-  #TODO 
+
+boom <- new("node", data= data)
+tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
   
+  
+  if(impurity_gini_index(tree@data$class)> 0 & NROW(tree@data) > nmin){
+  cat(NROW(tree@data))
+  
+  best = Bestsplit(tree@data)
+  tree@splitcol = best$column
+  tree@splitvar = best$splitval
+    if(NROW(data[data[best$column] <= best$splitval,])> minleaf){
+      tree@left = tree.grow(new('node',  data = tree@data[tree@data[best$column] <= best$splitval,]),1,1,2,1)
+    }
+    if(NROW(data[data[best$column] > best$splitval,])> minleaf){
+      tree@right = tree.grow(new('node', data = tree@data[tree@data[best$column] > best$splitval,]),1,1,2,1)
+    }
+  
+ 
+  }
+    
+    
+    
+ 
+    
+  
+  return(tree)
 }
 
 
@@ -41,6 +66,11 @@ tree.grow <- function(x, y, nmin = 0, minleaf = 0, impurity = gini_index){
 #   A vector of binary class labels. It contains the predicted class label
 #   for each row in x.
 tree.classify <- function (x, tr){
+  searchdata = setNames(data.frame(matrix(ncol = length(x), nrow = 1)), colnames(tr@data))
+  for (I in 1:length(x)) {
+    searchdata[,I] = x[I]
+  }
+  return(searchdata)
   
   apply(x,1,predict, tr)
   
