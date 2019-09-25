@@ -112,3 +112,22 @@ partition <- function(isRight, x, y) {
   ly = y[! isRight]
   return(list(left.x = lx, right.x = rx, left.y = ly, right.y = ry))
 }
+
+# majority_class(y)
+# Computes the majority vote for the given vector of class labels.
+#
+# Arguments
+#   y : A binary (numerical) vector, with class labels 0 or 1
+#
+# Result
+#   The class label 0 or 1 which is more frequent in the input vector.
+#   Ties are broken at random.
+majority_class <- function(y) {
+  n1 <- sum(y)
+  n <- NROW(y)
+  if (n1 * 2 > n)
+    return(1)
+  if (n1 * 2 < n)
+    return(0)
+  return (sample(0:1, 1))
+}
