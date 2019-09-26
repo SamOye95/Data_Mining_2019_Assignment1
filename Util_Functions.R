@@ -1,5 +1,39 @@
 # This script contains utility functions common to all the other scripts.
 
+
+# Function: read.data(fileName, test, header)
+# Reads a dataset and split training and testing data
+#
+# Arguments:
+#   fileName : The csv file to load. Last column is assumed to be class label.
+#   test     : A number in [0,1] that represents the percent of rows to use for testing
+#   header   : A logic value: does the file has an header?
+#
+# Result
+#   A list of
+#     data : a data frame that contains the whole dataset
+#     train.x :  attribute values as matrix (training dataset)
+#     train.y :  vector of class labels (training dataset)
+#     test.x  :  attribute values as matrix, testing dataset)
+#     test.y  :  vector of class labels (testing dataset)
+read.data <- function(fileName, test, header = FALSE) {
+  r.data <- read.csv(fileName, header)
+  
+  isTest <- sample(nrow(r.data), test * nrow(r.data))
+  r.test <- r.data[isTest, ]
+  r.train <- if (test == 0) r.data else r.data[-isTest, ]
+  
+  nc <- dim(r.data)[2]
+  r.train.x <- r.train[, 1:(nc - 1), drop = FALSE]
+  r.train.y <- r.train[,nc]
+  r.test.x <- r.test[, 1:(nc - 1), drop = FALSE]
+  r.test.y <- r.test[, nc]
+  return(list(data = r.data, train.x = r.train.x, train.y = r.train.y,
+              test.x = r.test.x, test.y = r.test.y))
+}
+
+
+
 # Function: impurity_gini_index(y)
 # Gini index impurity function for the two-class case
 #
@@ -18,49 +52,160 @@ impurity_gini_index <-function(x){
 }
 #nvals = numbervalues 
 #cvals = classvalues
-BNS<- function(nvals,cvals){
-  classvals<- data.frame(cvals)
-  n<-length(nvals)
-  imp <- impurity_gini_index(classvals)
-  splitval<- vector(mode = "numeric", n)
-   i=1
-  for (var in nvals) {
-    left_total <- length(nvals[nvals<=var])
-    left_possitive <- sum(cvals[nvals<=var])
-    left_negative <- left_total-left_possitive
-    
-    right_total <- length(nvals[nvals>var])
-    right_possitive <- sum(cvals[nvals>var])
-    right_negative <- right_total-right_possitive
-   # return(c(left_negative,left_possitive,left_total, right_negative, right_possitive, right_total))
-    splitval[i]<- imp - (left_total /n)*(left_possitive/left_total)*(left_negative/left_total) - (right_total /n)*(right_possitive/right_total)*(right_negative/right_total)
-    
-    i<-i+1
-  }
-   val = nvals[which.max(splitval)]
-  return(c(splitval[which.max(splitval)],val))
+# BNS<- function(nvals,cvals){
+#   classvals<- data.frame(cvals)
+#   n<-length(nvals)
+#   imp <- impurity_gini_index(classvals)
+#   splitval<- vector(mode = "numeric", n)
+#    i=1
+#   for (var in nvals) {
+#     left_total <- length(nvals[nvals<=var])
+#     left_possitive <- sum(cvals[nvals<=var])
+#     left_negative <- left_total-left_possitive
+#     
+#     right_total <- length(nvals[nvals>var])
+#     right_possitive <- sum(cvals[nvals>var])
+#     right_negative <- right_total-right_possitive
+#    # return(c(left_negative,left_possitive,left_total, right_negative, right_possitive, right_total))
+#     splitval[i]<- imp - (left_total /n)*(left_possitive/left_total)*(left_negative/left_total) - (right_total /n)*(right_possitive/right_total)*(right_negative/right_total)
+#     
+#     i<-i+1
+#   }
+#    val = nvals[which.max(splitval)]
+#   return(c(splitval[which.max(splitval)],val))
+# 
+# }
 
+# Bestsplit = function(data){
+#   list = setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("infogain", "splitval", "column"))
+#   I =1
+#   for(var in data){
+#     uni= unique(var)
+#     if(length(uni) == 2){
+#       list = rbind(list,c(igi(var, data$class),1, colnames(data[I])))
+#       
+#      
+#     }
+#     else{
+#      list = rbind(list,c(BNS(var, data$class),colnames(data[I])))
+#       
+#     }
+#     
+#     I= I+1
+#   }
+#   return(list[which.max(list$infogain),])
+# }
+
+
+# Function: candidate_splits(x, y, impurity)
+# Computes the possible splits for the attribute vector x, with class label y and
+# their impurity reduction.
+#
+# Arguments:
+#   x : A numerical vector containing values of a numerical/binary attribute
+#   y : A binary (numerical) vector containing the corresponding class labels for x
+#   impurity : The impurity function to be used when computing the impurity reduction.
+#
+# Result:
+#   A 2-columns matrix containing all the possible splits on x and their impurity reduction.
+candidate_splits <- function(x, y, impurity = gini_index){
+  xy <- data.frame(x,y)
+  sorted <- xy[order(xy$x), ]
+  x <- sorted$x
+  y <- sorted$y
+  x.distinct <- unique(x)
+  splits <- lapply(seq_len(length(x.distinct) - 1),
+                   function(i) mean(x.distinct[i : (i + 1)]))
+  
+  with.impurity <- function(s) c(s, impurity_reduction(s, x, y, impurity))
+  candidates <- t(vapply(splits, with.impurity , c(1,2)))
+  return(candidates)
 }
 
-Bestsplit = function(data){
-  list = setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("infogain", "splitval", "column"))
-  I =1
-  for(var in data){
-    uni= unique(var)
-    if(length(uni) == 2){
-      list = rbind(list,c(igi(var, data$class),1, colnames(data[I])))
-      
-     
-    }
-    else{
-     list = rbind(list,c(BNS(var, data$class),colnames(data[I])))
-      
-    }
-    
-    I= I+1
-  }
-  return(list[which.max(list$infogain),])
+# Function: is_good_split(nodes, minleaf)
+# Determine whether a split meet the minleaf constraint.
+#
+# Arguments:
+#   nodes : A list obtained by the split function
+#   minleaf : An integer number
+#
+# Result: TRUE if both the leaves contained in nodes contain minleaf observations,
+#         FALSE otherwise.
+is_good_split <- function (nodes, minleaf) {
+  length(nodes$left$x) >= minleaf && length(nodes$right$x) >= minleaf
 }
+
+# Function: best.split(s1, s2)
+# Returns the best of the two splits given.
+#
+# Arguments
+#   s1 s2 : A split object representing a split
+#           The comparison is done on the reduction field.
+best.split <-function(s1, s2){
+  if (!"reduction" %in% names(s1))
+    return(s2)
+  if(!"reduction" %in% names(s2))
+    return(s1)
+  best <- if (s1$reduction >= s2$reduction) s1 else s2
+  return(best)
+}
+
+# Function: best.split.among(splits)
+#
+# Arguments:
+#   splits: A list of split objects.
+# Output
+#   The split in the list with greater reduction, or NULL
+#   if the list is empty.
+#   The returned split is extended with a new field index containing its
+#   position in the list.
+best.split.among <- function(splits){
+  best <- NULL
+  for (i in seq(splits)){
+    splits[[i]]$index <- i
+    best <- best.split(best, splits[[i]])
+  }
+  return(best)
+}
+
+# Function: best.split.on(x, y, minleaf, impurity)
+# Computes the best possible split on the attribute vector x.
+#
+# Arguments
+#   x : Vector containing numerical/binary values
+#   y : Vector containing binary class labels
+#   minleaf : The minimum number of observations required to consider a split acceptable (defaut = 0)
+#   impurity : The impurity function that will be used for computing the impurity reduction (default = gini_index)
+#
+# The two vectors have the same length.
+#
+# Result
+#   A split object representing the best possible split on x
+#   NULL if no possible split satisfy the minleaf constraint.
+best.split.on <- function (x, y, minleaf = 0, impurity = gini_index){
+  cs <- as.data.frame(candidate_splits(x, y, impurity))
+  colnames(cs) <- c('split', 'reduction')
+  candidates <- unique(cs[order(cs$reduction),])
+  splits <- list()
+  for (r in seq_len(nrow(candidates))){
+    current <- as.list(cs[r, ])
+    nodes <- split(current$split, x, y)
+    if (is_good_split(nodes, minleaf))
+      splits[[r]] <- c(current, isRight = list(nodes$isRight))
+  }
+  return(best.split.among(splits))
+}
+
+# Result
+#   A list containing the following elements or NULL:
+#     col : The index of the column to be splitted.
+#     split : The numerical value that seperates the observations.
+best.split.of.all <- function(attrs, ys, minleaf = 0, impurity = gini_index){
+  fbest <- function(a, b) best.split.on(a, b, minleaf, impurity)
+  candidates <- apply(attrs, 2, fbest, ys)
+  return(best.split.among(candidates))
+}
+
 # impurity gini index of a vector
 igi = function(data, cvals){
   classvals<- data.frame(cvals)
