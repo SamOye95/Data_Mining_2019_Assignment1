@@ -26,7 +26,7 @@ source("node.r")
 #         with the classify function.
 
 
-boom <- new("node", data= data, nodetype="normalnode")
+
 tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
   
   
@@ -64,12 +64,29 @@ tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
 #   A vector of binary class labels. It contains the predicted class label
 #   for each row in x.
 tree.classify <- function (x, tr){
-  searchdata = setNames(data.frame(matrix(ncol = length(x), nrow = 1)), colnames(tr@data))
+  #make df of X
+  searchdata = data.frame(matrix(ncol = length(x), nrow = 1))
   for (I in 1:length(x)) {
-    searchdata[,I] = x[I]
+    searchdata[1,I] = x[I]
   }
-  return(searchdata)
+  names(searchdata) = colnames(tr@data)
+  if(tr@nodetype == "leaf_node"){
+    return(tr@label)
+  }
+  else{
+    if(tr@nodetype == "normal_node"){
+    if(searchdata[tr@splitcol]< tr@splitvar){
+      tree.classify(x,tr@left)
+    }
+    else{
+      tree.classify(x,tr@right)
+    }
+    }
+    
+  }
   
 }
+boom <- new("node", data= data)
+boom <- tree.grow(boom,1,1,2,1)
 
 

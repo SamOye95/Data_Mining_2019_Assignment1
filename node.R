@@ -23,6 +23,7 @@ setClass(
 setClass(
   "leafnode",
   slots = c(
+    data = "ANY",
     label = "ANY",
     nodetype = "ANY"
   ),
