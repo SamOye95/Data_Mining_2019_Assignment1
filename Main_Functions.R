@@ -26,12 +26,12 @@ source("node.r")
 #         with the classify function.
 
 
-boom <- new("node", data= data)
+boom <- new("node", data= data, nodetype="normalnode")
 tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
   
   
   if(impurity_gini_index(tree@data$class)> 0 & NROW(tree@data) > nmin){
-  cat(NROW(tree@data))
+  #cat(NROW(tree@data))
   
   best = Bestsplit(tree@data)
   tree@splitcol = best$column
@@ -45,12 +45,10 @@ tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
   
  
   }
-    
-    
-    
- 
-    
-  
+  else{
+    tree = new('leafnode',label = round((sum(tree@data$class)/ NROW(tree@data$class))))
+  }
+
   return(tree)
 }
 

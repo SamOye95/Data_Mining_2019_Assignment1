@@ -12,15 +12,23 @@ setClass(
     left = "ANY",
     right   = "ANY",
     splitcol   = "ANY",
-    splitvar = "ANY"
-  ),
+    splitvar = "ANY",
+    nodetype = "ANY"
+  ), 
+  prototype = list(
+    nodetype = "normal_node"
+  )
   
 )
 setClass(
   "leafnode",
   slots = c(
-    label = "ANY"
+    label = "ANY",
+    nodetype = "ANY"
   ),
+  prototype = list(
+    nodetype = "leaf_node"
+  )
 )
 
 addbranch <- function(node, left, right) {
