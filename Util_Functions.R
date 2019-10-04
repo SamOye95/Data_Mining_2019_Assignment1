@@ -12,7 +12,7 @@ impurity_gini_index <-function(x){
   #length of vector
    n <- NROW(x)
    #
-   n1 <-sum(x)
+   n1 <-length(x[x>0])
    #returns gini index value
    return((n1 / n) * (1- (n1 / n)))
 }

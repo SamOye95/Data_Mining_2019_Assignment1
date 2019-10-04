@@ -27,16 +27,18 @@ source("node.r")
 
 
 
-tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
+tree.grow <- function(tree, x, y, nmin , minleaf ,nfeat, impurity = gini_index){
   
   
   if(impurity_gini_index(tree@data$class)> 0 & NROW(tree@data) > nmin){
   #cat(NROW(tree@data))
-  
-  best = Bestsplit(tree@data)
+  subset = tree@data[,sample(ncol(tree@data),nfeat)]
+  subset$class = tree@data$class
+    
+  best = Bestsplit(subset)
   tree@splitcol = best$column
   tree@splitvar = best$splitval
-    if(NROW(data[data[best$column] <= best$splitval,])> minleaf){
+    if(NROW(tree@data[tree@data[best$column] <= best$splitval,])> minleaf){
       tree@left = tree.grow(new('node',  data = tree@data[tree@data[best$column] <= best$splitval,]),1,1,2,1)
     }
     if(NROW(data[data[best$column] > best$splitval,])> minleaf){
@@ -86,7 +88,9 @@ tree.classify <- function (x, tr){
   }
   
 }
-boom <- new("node", data= data)
-boom <- tree.grow(boom,1,1,2,1)
+trainnum = train[unlist(lapply(train, is.numeric))] 
+trainnum$post = (as.numeric(trainnum$post > 0))
+names(trainnum)[2] <- "class"
+
 
 
