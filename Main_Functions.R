@@ -26,29 +26,59 @@ source("node.r")
 #         with the classify function.
 
 
-boom <- new("node", data= data)
-tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
+tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_index){
   
+  N <- length(y)
+  tree <- data.frame(left = rep(NA,N),
+                     right = rep(NA,N),
+                     label = rep(NA,N),
+                     split = rep(NA,N),
+                     splitCol = rep(NA, N)
+                     )
   
-  if(impurity_gini_index(tree@data$class)> 0 & NROW(tree@data) > nmin){
-  cat(NROW(tree@data))
+  tree[1,] <-mkLeaf(y)
+  worklist <- list(1) #List of leaf indexs that still need to be split
+  samples <- list() #Observations ro index contained by each leaf
+  samples[[1]] <- 1:length(y)
+  freeRow <- 2
   
-  best = Bestsplit(tree@data)
-  tree@splitcol = best$column
-  tree@splitvar = best$splitval
-    if(NROW(data[data[best$column] <= best$splitval,])> minleaf){
-      tree@left = tree.grow(new('node',  data = tree@data[tree@data[best$column] <= best$splitval,]),1,1,2,1)
+  while (length(worklist) != 0) {
+    current.index <- worklist[[1]]
+    worklist <- worklist[-1]
+    current.samples <- samples[[current.index]]
+    y.current <- y[current.samples]
+    x.current <- x[current.samples, , drop = FALSE]
+    
+    
+    if(impurity(y.current) > 0 & length(current.samples) >= nmin) {
+      
+      best <- best.split.of.all(x.current,y.current, minleaf, impurity)
+      
+      if(is.null(best)){
+        next
+      }
+      
+      #Make leaves
+      left.index <- freeRow
+      right.index <- freeRow + 1
+      tree[left.index ,] <- mkLeaf(y.current[!best$isRight])
+      tree[right.index,] <- mkLeaf(y.current[best$isRight])
+      
+      #Split samples
+      samples[[left.index]] <- current.samples[!best$isRight]
+      samples[[right.index]] <- current.samples[best$isRight]
+      
+      #Add children to current node
+      tree[current.index, ] <- mkNode(left.index, right.index, best)
+      
+      #Control iteration
+      worklist <- c(worklist, left.index, right.index)
+      freeRow <-right.index + 1
     }
-    if(NROW(data[data[best$column] > best$splitval,])> minleaf){
-      tree@right = tree.grow(new('node', data = tree@data[tree@data[best$column] > best$splitval,]),1,1,2,1)
-    }
-  
- 
   }
+  
+
     
-    
-    
- 
     
   
   return(tree)
@@ -66,12 +96,6 @@ tree.grow <- function(tree, x, y, nmin , minleaf , impurity = gini_index){
 #   A vector of binary class labels. It contains the predicted class label
 #   for each row in x.
 tree.classify <- function (x, tr){
-  searchdata = setNames(data.frame(matrix(ncol = length(x), nrow = 1)), colnames(tr@data))
-  for (I in 1:length(x)) {
-    searchdata[,I] = x[I]
-  }
-  return(searchdata)
-  
   apply(x,1,predict, tr)
   
 }
