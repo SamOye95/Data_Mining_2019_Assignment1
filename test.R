@@ -24,7 +24,12 @@ test.eclipse.2 <- function(){
 #eclipse.2.actual <- tree.classify(eclipse.2$test.x, eclipse.2.tree)
 #eclipse.2.expected <- eclipse.2$test.y
 #return(table(eclipse.2.expected, eclipse.2.actual))
-
+testecl3 = function(x, tr){
+  list = tree.classify(x,tr)
+  validation = (as.numeric(eclipse.metrics.packages.3.0$post>0))
+  #retvar = cbind(eclipse.metrics.packages.3.0$post, list)
+  return(table(validation, list))
+}
 
 # Grows a classification tree on the complete pima data set and uses it to
 # predict the training sample itself and finally returns the resulting
