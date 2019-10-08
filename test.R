@@ -29,7 +29,7 @@ test.eclipse.2 <- function(){
 # assignment. Different runs returns slight different versions, as ties are
 # broken at random.
 test.pima <- function(){
-  pima <- read.pima.data("prima.txt", 0)
+  pima <- read.pima.data("pima.txt", 0)
   pima.tree <- tree.grow(pima$train.x, pima$train.y, nmin = 20, minleaf = 5)
   pima.actual <- tree.classify(pima$train.x, pima.tree)
   pima.expected <- pima$train.y
