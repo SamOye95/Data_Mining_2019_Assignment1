@@ -19,23 +19,11 @@
 read.data <- function(fileName, test, header = FALSE) {
 
   r.data <- read.csv(fileName, header, sep = ";")
-  isTest <- sample(nrow(r.data), test * nrow(r.data))
-  r.test <- r.data[isTest, ]
-  r.train <- if (test == 0) {
-                  r.data 
-                }else {
-                  r.data[-isTest, ]
-                }
-  
-  nc <- dim(r.data)[2]
-  r.train.x <- r.train[, 1:(nc - 1), drop = FALSE]
-  r.train.y <- r.train[,nc]
-  r.test.x <- r.test[, 1:(nc - 1), drop = FALSE]
-  r.test.y <- r.test[, nc]
-  list <- list(data = r.data, train.x = r.train.x, train.y = r.train.y,
-          test.x = r.test.x, test.y = r.test.y)
-  return(list)
+  r.data = r.data[unlist(lapply(r.data,is.numeric))]
+  r.data$post = (as.numeric(r.data$post>0))
+  return(r.data)
 }
+
 
 read.pima.data <- function(fileName, test, header = FALSE) {
 

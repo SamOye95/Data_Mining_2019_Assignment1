@@ -80,7 +80,7 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_in
 
     
     
-  
+  tree= head(tree,freeRow)
   return(tree)
 }
 
