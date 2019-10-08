@@ -3,7 +3,6 @@
 
 source("Util_Functions.r")
 source("Main_Functions.r")
-source("Test_Functions.r")
 
 # Grows a classification tree on the credit data set used in the lectures.
 # It returns the same classification tree. (The tree is actually symmetric to
@@ -18,7 +17,8 @@ test.credit <- function(){
 
 test.eclipse.2 <- function(){
   eclipse.2 <- read.data("eclipse-metrics-packages-2.0.txt",0, header = TRUE)
-  eclipse.2.tree <- tree.grow(train, eclipse.2$post, nmin = 15, minleaf = 5)
+  eclipse.2.without.post <- eclipse.2[,-2]
+  eclipse.2.tree <- tree.grow(eclipse.2.without.post, eclipse.2$post, nmin = 15, minleaf = 5)
   return(eclipse.2.tree)
 }
 #eclipse.2.actual <- tree.classify(eclipse.2$test.x, eclipse.2.tree)
