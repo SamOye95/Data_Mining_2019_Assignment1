@@ -10,17 +10,20 @@ source("Test_Functions.r")
 # that one, because observations that satisfy a <= split are always assigned
 # to the left child).
 test.credit <- function(){
-  credit <- read.data("credit.txt",0, header = TRUE)
-  return(tree.grow(credit$train.x, credit$train.y, nmin = 2, minleaf = 1))
+  credit <- read.pima.data("credit.txt",0, header = TRUE)
+  credit.tree <- tree.grow(credit$train.x, credit$train.y, nmin = 2, minleaf = 1)
+  credit.actual <- tree.classify(credit$train.x, credit.tree)
+  return(credit.actual)
 }
 
 test.eclipse.2 <- function(){
   eclipse.2 <- read.data("eclipse-metrics-packages-2.0.txt",0, header = TRUE)
-  eclipse.2.tree <- tree.grow(eclipse.2$train.x, eclipse.2$train.y, nmin = 15, minleaf = 5)
-  eclipse.2.actual <- tree.classify(eclipse.2$test.x, eclipse.2.tree)
-  eclipse.2.expected <- eclipse.2$test.y
-  return(table(eclipse.2.expected, eclipse.2.actual))
+  eclipse.2.tree <- tree.grow(train, eclipse.2$post, nmin = 15, minleaf = 5)
+  return(eclipse.2.tree)
 }
+#eclipse.2.actual <- tree.classify(eclipse.2$test.x, eclipse.2.tree)
+#eclipse.2.expected <- eclipse.2$test.y
+#return(table(eclipse.2.expected, eclipse.2.actual))
 
 
 # Grows a classification tree on the complete pima data set and uses it to

@@ -50,7 +50,7 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_in
     x.current <- x[current.samples, , drop = FALSE]
     
     
-    if(impurity(y.current) > 0 & length(current.samples) >= nmin) {
+    if(impurity(x.current) > 0 & length(current.samples) >= nmin) {
       
       best <- best.split.of.all(x.current,y.current, minleaf, impurity)
       
