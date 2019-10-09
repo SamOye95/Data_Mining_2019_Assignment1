@@ -26,7 +26,7 @@ source("node.r")
 #         with the classify function.
 
 
-tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_index){
+tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , nfeat =0, impurity = impurity_gini_index){
   
   N <- length(y)
   tree <- data.frame(left = rep(NA,N),
@@ -46,14 +46,19 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_in
     current.index <- worklist[[1]]
     worklist <- worklist[-1]
     current.samples <- samples[[current.index]]
+   
     y.current <- y[current.samples]
     x.current <- x[current.samples, , drop = FALSE]
     
+    #nfeat colums for the x.current
+    x.current = x.current[,sample(ncol(x),nfeat)]
+    
     
     if(impurity(y.current) > 0 & length(current.samples) >= nmin) {
-      
-      #subset = tree@data[,sample(ncol(tree@data),nfeat)]
+    
       best <- best.split.of.all(x.current,y.current, minleaf, impurity)
+      splitcolumn = grep(paste("^", paste(colnames(x.current[best$index]),"$", sep = ""), sep = ""),colnames(x))[1]
+      best$index= splitcolumn
       
       if(is.null(best)){
         next

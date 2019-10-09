@@ -34,7 +34,7 @@ test.pima <- function(){
 test.eclipse.2 <- function(){
   eclipse.2 <- read.data("eclipse-metrics-packages-2.0.txt",0, header = TRUE)
   eclipse.2.without.post <- eclipse.2[,-2]
-  eclipse.2.tree <- tree.grow(eclipse.2.without.post, eclipse.2$post, nmin = 15, minleaf = 5)
+  eclipse.2.tree <- tree.grow(eclipse.2.without.post, eclipse.2$post, nmin = 15, minleaf = 5,nfeat=41)
   return(eclipse.2.tree)
 }
 
