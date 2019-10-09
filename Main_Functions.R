@@ -86,6 +86,66 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , impurity = impurity_gini_in
 }
 
 
+# Function: The function grows m trees and store them in a list
+#
+# Arguments
+# x (matrix)
+# y (vector)
+# nmin (numeric)
+# minleaf (numeric)
+# m (numeric)
+#
+#
+
+tree.grow.bag <- function(x, y, nmin, minleaf, m) {
+  # Vector for trees
+  trees <- list()
+  
+  # Loop as many times as wanted
+  for (i in 1:m) {
+    # Take samples from the data to use in tree growing
+    random_rows <- sample(nrow(x), nrow(x), replace = TRUE)
+    tmp_x <- x[random_rows, , drop = FALSE]
+    tmp_y <- y[random_rows]
+    # Grow tree using selected samples
+    trees[[i]] <- tree.grow(tmp_x, tmp_y, nmin, minleaf)
+  }
+  # Return all trees
+ return(trees)
+}
+
+
+
+
+# tree.classify.bag
+# INPUT: trees (list), x (matrix)
+# OUPUT: vector of predictions
+# The function classifies the input records by majority rule.
+tree.classify.bag <- function(trees, x) {
+  predictions <- c()
+  num_trees <- length(trees)
+  
+  for (r in 1:nrow(x)) {
+    row <- x[r, , drop = FALSE]
+    tmp_predictions <- c()
+    for (t in 1:num_trees) {
+      current_tree <- trees[[t]]
+      p <- tree.classify(row, current_tree)
+      tmp_predictions <- c(tmp_predictions, p)
+    }
+    
+    n <- length(which(tmp_predictions == 0))
+    if (n >= (num_trees / 2)) {
+      predictions <- c(predictions, 0)
+    } else {
+      predictions <- c(predictions, 1)
+    }
+  }
+  
+  return(predictions)
+}
+
+
 # Function: tree.classify(x, tr)
 # Predicts the class label for each row in the input attributes matrix.
 #
