@@ -102,7 +102,7 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , nfeat =0, impurity = impuri
 #
 #
 
-tree.grow.bag <- function(x, y, nmin, minleaf, m) {
+tree.grow.bag <- function(x, y, nmin, minleaf, nfeat, m) {
   # Vector for trees
   trees <- list()
   
@@ -113,7 +113,7 @@ tree.grow.bag <- function(x, y, nmin, minleaf, m) {
     tmp_x <- x[random_rows, , drop = FALSE]
     tmp_y <- y[random_rows]
     # Grow tree using selected samples
-    trees[[i]] <- tree.grow(tmp_x, tmp_y, nmin, minleaf)
+    trees[[i]] <- tree.grow(tmp_x, tmp_y, nmin, minleaf, nfeat)
   }
   # Return all trees
  return(trees)
