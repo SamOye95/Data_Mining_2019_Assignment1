@@ -67,7 +67,7 @@ test.eclipse.single.tree.cm <- function(){
 test.eclipse.2.bag <- function(){
   eclipse.2 <- read.data("eclipse-metrics-packages-2.0.txt",0, header = TRUE)
   eclipse.2.without.post <- eclipse.2[,-2]
-  eclipse.bagging.tree <- tree.grow.bag(eclipse.2.without.post, eclipse.2$post, nmin = 15, minleaf = 5, nfeat = 41, m = 10 )
+  eclipse.bagging.tree <- tree.grow.bag(eclipse.2.without.post, eclipse.2$post, nmin = 15, minleaf = 5, nfeat = 41, m = 100 )
   return(eclipse.bagging.tree)
 }
 testecl3.bag = function(trees, x){
