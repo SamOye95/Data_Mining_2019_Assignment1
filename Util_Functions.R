@@ -12,10 +12,7 @@
 # Result
 #   A list of
 #     data : a data frame that contains the whole dataset
-#     train.x :  attribute values as matrix (training dataset)
-#     train.y :  vector of class labels (training dataset)
-#     test.x  :  attribute values as matrix, testing dataset)
-#     test.y  :  vector of class labels (testing dataset)
+#
 read.data <- function(fileName, test, header = FALSE) {
 
   r.data <- read.csv(fileName, header, sep = ";")
@@ -50,7 +47,7 @@ read.pima.data <- function(fileName, test, header = FALSE) {
 # Gini index impurity function for the two-class case
 #
 # Arguments:
-#   y : A binary (numerical) vector, with class labels 0 or 1.
+#   x : A binary (numerical) vector, with class labels 0 or 1.
 #
 # Result: The value of the gini index impurity function for the given class label vector
 
