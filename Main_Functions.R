@@ -18,7 +18,7 @@ source("node.r")
 #   minleaf : an integer representing the minimum number for a leaf node
 #   impurity : The impurity function that will be used in the algorithm to
 #              compute the impurity reduction (default = gini index)
-#
+#   nfeat :the number of features that should be considered for each split
 #
 # The number of rows of x is the same as the length of y.
 #
@@ -98,8 +98,10 @@ tree.grow <- function( x, y, nmin = 0 , minleaf= 0 , nfeat =0, impurity = impuri
 # y (vector)
 # nmin (numeric)
 # minleaf (numeric)
-# m (numeric)
+# nfeat (numeric)
+# m (numeric)  the number of bootstrap samples to be drawn
 #
+# Result : A list of length m containing the m trees
 #
 
 tree.grow.bag <- function(x, y, nmin, minleaf, nfeat, m) {
@@ -122,10 +124,13 @@ tree.grow.bag <- function(x, y, nmin, minleaf, nfeat, m) {
 
 
 
-# tree.classify.bag
-# INPUT: trees (list), x (matrix)
-# OUPUT: vector of predictions
 # The function classifies the input records by majority rule.
+#tree.classify.bag
+# Arguements:
+# trees (list)
+# x (matrix)
+# Result: vector of predictions contains the predicted class label for row i of x.
+# 
 tree.classify.bag <- function(trees, x) {
   predictions <- c()
   num_trees <- length(trees)
