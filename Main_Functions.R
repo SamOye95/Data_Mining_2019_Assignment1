@@ -3,7 +3,7 @@
 # This script contains the implementation of classification trees
 
 source("Util_Functions.r")
-source("node.r")
+
 
 # Function: tree.grow(x, y, nmin, minleaf, impurity)
 # Trains a binary classification tree.
